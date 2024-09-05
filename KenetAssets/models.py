@@ -5,6 +5,10 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db.models import Max
 
+# Set timezone to Kenyan time (EAT)
+import pytz
+KENYA_TIME_ZONE = pytz.timezone('Africa/Nairobi')
+
 class Location(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True, blank=True)
@@ -19,7 +23,7 @@ class Location(models.Model):
 
 class Consignment(models.Model):
     id = models.AutoField(primary_key=True)
-    slk_id = models.CharField(max_length=20, unique=True, blank=True)
+    slk_id = models.CharField(max_length=20, unique=True, blank=True, editable=False)  # Make slk_id uneditable
     supplier = models.CharField(max_length=255)
     quantity = models.PositiveIntegerField()
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
@@ -168,6 +172,14 @@ class Dispatch(models.Model):
     datetime = models.DateTimeField(default=timezone.now)
     comments = models.TextField(blank=True, null=True)
     destination = models.CharField(max_length=255, blank=True, null=True)  # New field
+    location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)  # Auto-populated
+
+    def save(self, *args, **kwargs):
+        # Auto-populate the location from the asset if it's not already set
+        if self.asset and not self.location:
+            self.location = self.asset.location
+
+        super().save(*args, **kwargs)
 
     def get_user_full_name(self):
         if self.user:

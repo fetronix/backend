@@ -29,15 +29,6 @@ class ReceivingAdmin(admin.ModelAdmin):
     list_editable= ('status',)
     readonly_fields = ('supplier', 'get_received_by_full_name', 'invoice_number', 'location')
 
-# @admin.register(Asset)
-# class AssetAdmin(admin.ModelAdmin):
-#     list_display = (
-#         'receiving', 'tag_number', 'description', 'serial_number', 
-#         'name', 'model','status','get_received_by_full_name', 'location', 'invoice_number', 'supplier'
-#     )
-#     search_fields = ('tag_number', 'description', 'serial_number', 'name', 'model')
-#     readonly_fields = ('description', 'serial_number', 'name', 'model', 'get_received_by_full_name', 'location', 'invoice_number', 'supplier')
-   
 
 @admin.register(Asset)
 class AssetAdmin(admin.ModelAdmin):
@@ -52,8 +43,11 @@ class AssetAdmin(admin.ModelAdmin):
 
 @admin.register(Dispatch)
 class DispatchAdmin(admin.ModelAdmin):
-    list_display = ('asset', 'get_user_full_name', 'get_approver_full_name', 'status', 'datetime', 'destination')
+    list_display = ('asset', 'get_user_full_name', 'get_approver_full_name', 'status','location', 'datetime', 'destination')
     search_fields = ('asset__tag_number', 'user__username', 'approver__username')
     readonly_fields = ('get_user_full_name', 'get_approver_full_name')
     list_editable= ('status',)
     # Ensure 'status' is editable by not including it in readonly_fields
+
+
+
